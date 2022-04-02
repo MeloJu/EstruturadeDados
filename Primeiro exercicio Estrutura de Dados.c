@@ -14,7 +14,6 @@ typedef struct Lista
     struct Lista *prox;
 }Lista;
 
-
 Lista *CriaLista()
 {
     return NULL;
@@ -36,33 +35,15 @@ Lista *insere(Lista *lista, int numero)
     return lista;
 }
 
-
-
-void libera (Lista *lista)
-{
-    Lista* p = lista;
-    while (p != NULL)
-    {
-        Lista* t = p->prox; 
-        free(p); 
-        p = t; 
-    }
-}
-
-
-
 void imprime(Lista *l)
 {
-    Lista *p = l;
-    if(p!=NULL)
+    if(l != NULL)
     {
-        printf("%d ", p->n);
-        imprime(p->prox);
+        printf("|%d| ", l->n);
+        imprime(l->prox);    
     }
+    printf("\n");
 }
-
-
-
 
 Lista  *delete(Lista *novo, int numero)
 {
@@ -79,30 +60,37 @@ Lista  *delete(Lista *novo, int numero)
           aux = aux2;
           return aux;
       }  
-
-     if(novo == NULL)
-        return NULL;
     
-    
-
-    printf("Estou no valor: %d\n", novo->n);
-       
     novo->prox  =  delete(novo->prox, numero);
-
     return novo;
-
 }   
 
+void DestroiLista(Lista **novo)
+{
+    if(*novo != NULL)
+        DestroiLista(&(*novo)->prox);
+
+    free(*novo);
+    *novo = NULL;
+}
 
 int fazersoma(Lista *novo, int soma)
 {
-   
-
+    if(novo == NULL)
+        return soma;
+    else
+        return fazersoma(novo->prox, novo->n + soma);
 }
 
-
-
-
+int contar(Lista *novo, int numero, int cont)
+{
+    if(novo == NULL)
+        return cont;
+    else if(novo->n==numero)
+        cont++;
+        
+    return contar(novo->prox, numero, cont);
+}
 
 int main()
 {
@@ -110,20 +98,20 @@ int main()
     int numero = 0;
     int soma = 0;
     Lista *novo = CriaLista();
-    
 
-
-    while(menu != 5)
+    while(menu != 7)
     {
         printf("1 - Inserir numero na lista\n2 - Deletar numero da lista\n3 - Somar todos os numeros da lista\n");
-        printf("4 - Contar o numero de ocorrencias do numero na lista\n5- Encerrar o programa\n");
+        printf("4 - Contar o numero de ocorrencias do numero na lista\n5 - Imprimir a lista\n6 - Para destruir a lista\n7-Para encerrar o programa\n");
         scanf("%d", &menu);
         printf("\n");
+       
         if(menu == 1)
         {
             printf("Digite o numero que deseja inserir\n");
             scanf("%d", &numero);
             novo = insere(novo, numero);
+            system("cls");
         }
 
         if(menu == 2)
@@ -131,37 +119,34 @@ int main()
             printf("Digite o numero que deseja deletar\n");
             scanf("%d", &numero);
             novo = delete(novo, numero);
+            system("cls");
         }
 
         if(menu == 3)
         {
-            soma = fazersoma(novo, soma);
-            printf("O resultado da soma eh: %d\n", soma);
-
-
+            numero = fazersoma(novo, soma);
+            printf("O resultado da soma eh: %d\n", numero);
         }
 
-         if(menu == 4)
+        if(menu == 4)
         {
-            //fazer uma funcao de procura na lista
-
-
+            printf("Digite o numero que deseja procurar\n");
+            scanf("%d", &numero);
+            numero = contar(novo, numero, 0);
+            printf("Se repetiu %d vez(es)\n", numero);
         }
 
-
+        if(menu == 5)
+            imprime(novo);
+        
         if(menu == 6)
         {
-            
-            imprime(novo);
-
+            DestroiLista(&novo);
+            system("cls");
         }
-
         printf("\n");
     }
+    printf("\n");
 
-
-
-
-
-
+    return 0;
 }
